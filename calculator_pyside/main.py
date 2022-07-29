@@ -2,7 +2,7 @@ import sys
 
 from PySide6 import QtWidgets
 
-from src.calculator import Calculator
+from calculator_pyside.calculator import Calculator
 
 app = QtWidgets.QApplication([])
 

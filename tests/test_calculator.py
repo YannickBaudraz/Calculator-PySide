@@ -1,4 +1,4 @@
-from src import __version__
+from calculator_pyside import __version__
 
 
 def test_version():
