@@ -1,3 +1,5 @@
+from functools import partial
+
 from PySide6.QtWidgets import QWidget, QPushButton, QLineEdit, QGridLayout
 
 
@@ -51,7 +53,36 @@ class Calculator(QWidget):
         self.grid_layout.addWidget(self.btn_dot, 6, 2, 1, 1)
         self.grid_layout.addWidget(self.btn_equal, 6, 3, 1, 1)
 
+        self.btn_digits = []
+
         for i in range(self.grid_layout.count()):
             widget = self.grid_layout.itemAt(i).widget()
             if isinstance(widget, QPushButton):
                 widget.setFixedSize(64, 64)
+                if widget.text().isdigit():
+                    self.btn_digits.append(widget)
+                    widget.clicked.connect(partial(self.btn_number_pressed, widget.text()))
+
+        self.btn_equal.clicked.connect(self.calculate_operation)
+        self.btn_clear.clicked.connect(self.reset)
+        self.btn_plus.clicked.connect(partial(self.btn_operation_pressed, self.btn_plus.text()))
+        self.btn_minus.clicked.connect(partial(self.btn_operation_pressed, self.btn_minus.text()))
+        self.btn_multiply.clicked.connect(partial(self.btn_operation_pressed, self.btn_multiply.text()))
+        self.btn_divide.clicked.connect(partial(self.btn_operation_pressed, self.btn_divide.text()))
+
+    def btn_number_pressed(self, btn):
+        result_txt = str(self.result.text())
+        self.result.setText(btn) if result_txt == '0' else self.result.setText(result_txt + btn)
+
+    def btn_operation_pressed(self, operation):
+        self.operation.setText(self.operation.text() + self.result.text() + operation)
+        self.result.setText('0')
+
+    def reset(self):
+        self.operation.setText('')
+        self.result.setText('0')
+
+    def calculate_operation(self):
+        self.operation.setText(self.operation.text() + self.result.text())
+        result_operation = eval(str(self.operation.text()))
+        self.result.setText(str(result_operation))
